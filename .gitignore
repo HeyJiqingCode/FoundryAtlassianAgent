@@ -25,3 +25,6 @@ venv/
 
 # Logs
 *.log
+
+# Tmp files
+.tmp/
