@@ -13,15 +13,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── 从环境变量读取配置 ──────────────────────────────────────────────
-foundry_project_endpoint = os.getenv("FOUNDRY_PROJECT_ENDPOINT")
-agent_name = os.getenv("AGENT_NAME")
-mcp_tool_server_label = os.getenv("MCP_TOOL_SERVER_NAME")
-mcp_tool_server_url = os.getenv("MCP_TOOL_SERVER_URL")
-mcp_project_connection_id = os.getenv("MCP_PROJECT_CONNECTION_ID")
-agent_model = os.getenv("AGENT_MODEL")
-agent_reasoning_effort = os.getenv("AGENT_REASONING_EFFORT", "high")
-
-allowed_reasoning_efforts = {"none", "minimal", "low", "medium", "high", "xhigh"}
+foundry_project_endpoint: str | None = os.getenv("FOUNDRY_PROJECT_ENDPOINT")
+agent_name: str | None = os.getenv("AGENT_NAME")
+mcp_tool_server_label: str | None = os.getenv("MCP_TOOL_SERVER_NAME")
+mcp_tool_server_url: str | None = os.getenv("MCP_TOOL_SERVER_URL")
+mcp_project_connection_id: str | None = os.getenv("MCP_PROJECT_CONNECTION_ID")
+agent_model: str | None = os.getenv("AGENT_MODEL")
+agent_reasoning_effort: str = os.getenv("AGENT_REASONING_EFFORT", "high")
+agent_mcp_require_approval: str = os.getenv("AGENT_MCP_REQUIRE_APPROVAL")
 
 # 检查必填环境变量
 required_vars = {
@@ -36,13 +35,6 @@ missing = [k for k, v in required_vars.items() if not v]
 if missing:
     print(f"Missing environment variables: {', '.join(missing)}")
     print("Please set them in the .env file.")
-    exit(1)
-
-if agent_reasoning_effort not in allowed_reasoning_efforts:
-    print(
-        "Invalid AGENT_REASONING_EFFORT. "
-        "Allowed values: none, minimal, low, medium, high, xhigh"
-    )
     exit(1)
 
 # ── 初始化 Foundry 客户端 ──────────────────────────────────────────
@@ -86,7 +78,7 @@ agent = client.agents.create_version(
                 "server_label": mcp_tool_server_label,
                 "server_url": mcp_tool_server_url,
                 "project_connection_id": mcp_project_connection_id,
-                "require_approval": "never",
+                "require_approval": agent_mcp_require_approval,
             },
         ],
     ),
